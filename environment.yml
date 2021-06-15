@@ -7,4 +7,5 @@ dependencies:
     - django=1.11
     - selenium=3.13
     - pytest
+    - pytest-django
     - geckodriver=0.21.0
