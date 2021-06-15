@@ -7,6 +7,13 @@ from pytest_django.asserts import assertTemplateUsed
 
 
 # Create your tests here.
-def test_home_page_returns_correct_html(client: django.test.Client):
+
+#### HOME PAGE TESTS ####
+def test_uses_home_template(client: django.test.Client):
     response = client.get('/')
+    assertTemplateUsed(response, 'home.html')
+
+def test_can_save_a_POST_request(client: django.test.Client):
+    response = client.post('/', data={'item_text': 'A new list item'})
+    assert 'A new list item' in response.content.decode()
     assertTemplateUsed(response, 'home.html')
