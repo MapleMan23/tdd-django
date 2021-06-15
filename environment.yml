@@ -1,0 +1,10 @@
+name: tdd
+channels:
+    - conda-forge
+    - default
+dependencies:
+    - python=3.7
+    - django=1.11
+    - selenium=3.13
+    - pytest
+    - geckodriver=0.21.0
