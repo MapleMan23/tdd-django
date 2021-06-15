@@ -2,6 +2,8 @@ from selenium import webdriver
 import pytest
 import time
 from selenium.webdriver.common.keys import Keys
+import django
+import pytest_django
 
 
 @pytest.fixture
@@ -18,10 +20,11 @@ def check_for_row_in_list_tabe(browser: webdriver.Firefox, row_text: str):
     assert row_text in [row.text for row in rows]
 
 @pytest.mark.functional_test
-def test_can_start_a_list_and_retrieve_it_later(browser: webdriver.Firefox):
+@pytest.mark.django_db
+def test_can_start_a_list_and_retrieve_it_later(browser: webdriver.Firefox, live_server):
     # Edith has heard about a cool new online to-do app. She goes
     # to check out its homepage
-    browser.get('http://localhost:8000')
+    browser.get(live_server.url)
 
     # She notices the page title and header mention to-do lists
     assert 'To-Do' in browser.title
@@ -57,6 +60,6 @@ def test_can_start_a_list_and_retrieve_it_later(browser: webdriver.Firefox):
     # Edith wonders whether the site will remember her list. Then she sees
     # that the site has generated a unique URL for her -- there is some
     # explanatory text to that effect.
-    assert False, 'FINISH THE TEST'
+    pytest.xfail('FINISHED THE TEST')
 
     # She visits that URL - her to-do list is still there.
