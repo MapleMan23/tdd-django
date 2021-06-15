@@ -11,5 +11,6 @@ def browser():
 
     firefox.quit()
 
+@pytest.mark.functional_test
 def test_can_start_a_list_and_retrieve_it_later(browser: webdriver.Firefox):
     assert 'To-Do' in browser.title
