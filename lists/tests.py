@@ -11,14 +11,41 @@ from lists.models import Item
 # Create your tests here.
 
 #### HOME PAGE TESTS ####
+@pytest.mark.django_db
 def test_uses_home_template(client: django.test.Client):
     response = client.get('/')
     assertTemplateUsed(response, 'home.html')
 
+@pytest.mark.django_db
 def test_can_save_a_POST_request(client: django.test.Client):
+    client.post('/', data={'item_text': 'A new list item'})
+
+    assert Item.objects.count() == 1    # pylint: disable=no-member
+    new_item = Item.objects.first()     # pylint: disable=no-member
+    assert new_item.text == 'A new list item'
+
+
+@pytest.mark.django_db
+def test_redirects_after_POST(client: django.test.Client):
     response = client.post('/', data={'item_text': 'A new list item'})
-    assert 'A new list item' in response.content.decode()
-    assertTemplateUsed(response, 'home.html')
+
+    assert response.status_code == 302
+    assert response['location'] == '/'
+
+@pytest.mark.django_db
+def test_only_saves_items_when_necessary(client):
+    client.get('/')
+    assert Item.objects.count() == 0 # pylint: disable=no-member
+
+@pytest.mark.django_db
+def test_displays_all_list_items(client: django.test.Client):
+    Item.objects.create(text='itemey 1') # pylint: disable=no-member
+    Item.objects.create(text='itemey 2') # pylint: disable=no-member
+
+    response = client.get('/')
+
+    assert 'itemey 1' in response.content.decode()
+    assert 'itemey 2' in response.content.decode()
 
 #### ITEM MODEL TEST ####
 @pytest.mark.django_db
