@@ -4,7 +4,7 @@ from lists.views import home_page
 from django.http import HttpRequest
 
 import pytest
-from pytest_django.asserts import assertTemplateUsed
+from pytest_django.asserts import assertTemplateUsed, assertContains
 
 from lists.models import Item
 
@@ -30,22 +30,13 @@ def test_redirects_after_POST(client: django.test.Client):
     response = client.post('/', data={'item_text': 'A new list item'})
 
     assert response.status_code == 302
-    assert response['location'] == '/'
+    assert response['location'] == '/lists/the-only-list-in-the-world/'
 
 @pytest.mark.django_db
 def test_only_saves_items_when_necessary(client):
     client.get('/')
     assert Item.objects.count() == 0 # pylint: disable=no-member
 
-@pytest.mark.django_db
-def test_displays_all_list_items(client: django.test.Client):
-    Item.objects.create(text='itemey 1') # pylint: disable=no-member
-    Item.objects.create(text='itemey 2') # pylint: disable=no-member
-
-    response = client.get('/')
-
-    assert 'itemey 1' in response.content.decode()
-    assert 'itemey 2' in response.content.decode()
 
 #### ITEM MODEL TEST ####
 @pytest.mark.django_db
@@ -65,3 +56,15 @@ def test_saving_and_retrieving_items():
     second_saved_item = saved_items[1]
     assert first_saved_item.text == 'The first (ever) list item'
     assert second_saved_item.text == 'Item the second'
+
+
+#### LIST VIEW TEST ####
+@pytest.mark.django_db
+def test_displays_all_items(client: django.test.Client):
+    Item.objects.create(text='itemey 1') # pylint: disable=no-member
+    Item.objects.create(text='itemey 2') # pylint: disable=no-member
+
+    response = client.get('/lists/the-only-list-in-the-world/')
+
+    assertContains(response, 'itemey 1')
+    assertContains(response, 'itemey 2')
