@@ -8,7 +8,7 @@ from selenium.common.exceptions import WebDriverException
 import re
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture
 def browser():
     firefox = webdriver.Firefox()
 
@@ -86,8 +86,10 @@ def test_multiple_users_can_start_lists_at_different_urls(browser: webdriver.Fir
 
     ## We use a new browser session to make sure that no information
     ## of Ediths is coming through from cookies etc
-    browser.quit()
-    browser = webdriver.Firefox()
+    # browser.quit()
+    # browser.delete_all_cookies()
+    browser.refresh()
+    # browser = webdriver.Firefox()
 
     # Francis visits the home page. There is no sign of Edith's list
     browser.get(live_server.url)
@@ -95,7 +97,7 @@ def test_multiple_users_can_start_lists_at_different_urls(browser: webdriver.Fir
     assert 'Buy peacock feathers' not in page_text
     assert 'make a fly' not in page_text
 
-    # Francis starts a new list by entering a new item. He 
+    # Francis starts a new list by entering a new item. He
     # is less interesting than Edith
     inputbox = browser.find_element_by_id('id_new_item')
     inputbox.send_keys('Buy milk')
