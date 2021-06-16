@@ -49,7 +49,7 @@ def test_saving_and_retrieving_items():
     second_item.text = 'Item the second'
     second_item.save()
 
-    saved_items = Item.objects.all() # pylint: disable=no-member
+    saved_items = Item.objects.all()
     assert saved_items.count() == 2
 
     first_saved_item = saved_items[0]
@@ -59,6 +59,11 @@ def test_saving_and_retrieving_items():
 
 
 #### LIST VIEW TEST ####
+@pytest.mark.django_db
+def test_uses_list_template(client):
+    response = client.get('/lists/the-only-list-in-the-world/')
+    assertTemplateUsed(response, 'list.html')
+
 @pytest.mark.django_db
 def test_displays_all_items(client: django.test.Client):
     Item.objects.create(text='itemey 1') # pylint: disable=no-member
